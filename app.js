@@ -1,78 +1,65 @@
 const bookList = document.querySelector("#book-list ul");
+const addBookForm = document.querySelector("#add-book");
+const bookSearchInput = document.querySelector("#search-books input");
+const hideBooksCheckbox = document.querySelector(".checkbox #checkbox");
 
-let listStorage = ()=>{ localStorage.setItem("myStorage",bookList.innerHTML);}
-
-let getStorage = ()=>{
-    bookList.innerHTML = localStorage.getItem("myStorage");}
-    
-const addBook = document.querySelector("#add-book")
-const bookSearch = document.querySelector("#search-books input");
-
-//REMOVING BOOKS
-bookList.addEventListener("click", (e)=>{
-if(e.target.className==="delete"){
-    let btn = e.target.parentNode;
-    bookList.removeChild(btn); 
-    listStorage();
+// Save the book list to local storage
+function saveBookListToStorage() {
+    localStorage.setItem("myStorage", bookList.innerHTML);
 }
-});
 
-console
+// Load the book list from local storage
+function loadBookListFromStorage() {
+    bookList.innerHTML = localStorage.getItem("myStorage");
+}
 
-//ADDING BOOKS
-addBook.addEventListener("submit", (e)=>{
-    e.preventDefault();
-    let txtInput = addBook.querySelector("input");
-    if(txtInput.value!==""){
-        let newBook = document.createElement("li");
-    let title = document.createElement("span");
-    title.className = "name";
-    title.textContent = txtInput.value;
-    let del_btn = document.createElement("span");
-    del_btn.className = "delete";
-    del_btn.textContent="delete";
-    newBook.appendChild(title);
-    newBook.appendChild(del_btn);
-    bookList.append(newBook); 
-    txtInput.value = "";
-    listStorage();
+// Event listener for removing books
+bookList.addEventListener("click", (e) => {
+    if (e.target.className === "delete") {
+        const btn = e.target.parentNode;
+        bookList.removeChild(btn);
+        saveBookListToStorage();
     }
-     
-})
-
-//BOOK SEARCH
-
-bookSearch.addEventListener("keyup",(e)=>{
-let s_keyword = e.target.value;
-let allBooks = document.querySelectorAll("#book-list li .name");
-allBooks.forEach((a)=>{
-    a.textContent.toLowerCase();
-    s_keyword.toLowerCase();
-    if (a.textContent.toLowerCase().indexOf(s_keyword.toLowerCase())!== -1){
-      a.parentNode.style.display = "block";
-}else{
-    a.parentNode.style.display = "none";
-}
-})
 });
 
-//HIDE BOOKS
-const hide = document.querySelector(".checkbox #checkbox");
-
-hide.addEventListener("change",(e)=>{
-    return(hide.checked)? bookList.style.display = "none" : bookList.style.display = "block";
+// Event listener for adding books
+addBookForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const txtInput = addBookForm.querySelector("input");
+    if (txtInput.value !== "") {
+        const newBook = document.createElement("li");
+        const title = document.createElement("span");
+        title.className = "name";
+        title.textContent = txtInput.value;
+        const delBtn = document.createElement("span");
+        delBtn.className = "delete";
+        delBtn.textContent = "delete";
+        newBook.appendChild(title);
+        newBook.appendChild(delBtn);
+        bookList.appendChild(newBook);
+        txtInput.value = "";
+        saveBookListToStorage();
+    }
 });
 
+// Event listener for book search
+bookSearchInput.addEventListener("keyup", (e) => {
+    const searchKeyword = e.target.value.toLowerCase();
+    const allBooks = document.querySelectorAll("#book-list li .name");
+    allBooks.forEach((book) => {
+        const bookTitle = book.textContent.toLowerCase();
+        if (bookTitle.indexOf(searchKeyword) !== -1) {
+            book.parentNode.style.display = "block";
+        } else {
+            book.parentNode.style.display = "none";
+        }
+    });
+});
 
-/* 
-let myPromise = new Promise((resolve, reject)=>{
-    setTimeout( ()=>{
-        resolve("Data retrieved sucessfully");
-    }, 5000)
-}
-);
+// Event listener for hiding books
+hideBooksCheckbox.addEventListener("change", (e) => {
+    bookList.style.display = e.target.checked ? "none" : "block";
+});
 
-myPromise.then((value)=>{
-    console.log(value);
-}
-) */
+// Load the book list from local storage when the page loads
+loadBookListFromStorage();
